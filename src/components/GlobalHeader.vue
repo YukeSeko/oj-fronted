@@ -16,7 +16,7 @@
             <div class="title">OJ</div>
           </div>
         </a-menu-item>
-        <a-menu-item v-for="item in routes" :key="item.path">
+        <a-menu-item v-for="item in visibleRoutes" :key="item.path">
           {{ item.name }}
         </a-menu-item>
       </a-menu>
@@ -32,8 +32,9 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { routes } from "@/router/routers";
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
+import checkAccess from "@/access/checkAccess";
 
 const store = useStore();
 const router = useRouter();
@@ -43,6 +44,26 @@ const selectedKeys = ref(["/"]);
 // 路由跳转后，更新选中的菜单项
 router.afterEach((to, from, failure) => {
   selectedKeys.value = [to.path];
+});
+
+onMounted(() => {
+  console.log(store.state.user.loginUser);
+});
+
+// 展示在菜单的路由数组
+const visibleRoutes = computed(() => {
+  return routes.filter((item, index) => {
+    if (item.meta?.hideInMenu) {
+      return false;
+    }
+    // 根据权限过滤菜单
+    if (
+      !checkAccess(store.state.user.loginUser, item?.meta?.access as string)
+    ) {
+      return false;
+    }
+    return true;
+  });
 });
 
 // setTimeout(() => {

@@ -27,11 +27,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
-import { UserControllerService, UserLoginRequest } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { UserControllerService, UserLoginRequest } from "@/api";
+import { reactive } from "vue";
 
 /**
  * 表单信息
