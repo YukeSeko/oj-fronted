@@ -21,16 +21,16 @@ const bannerImage = "@/assets/login-banner.png";
 
 const carouselItem = computed(() => [
   {
-    slogan: "login.banner.slogan1",
-    subSlogan: "login.banner.subSlogan1",
+    slogan: "快速练习",
+    subSlogan: "快速提升你的算法能力",
   },
   {
-    slogan: "login.banner.slogan2",
-    subSlogan: "login.banner.subSlogan2",
+    slogan: "急速运行",
+    subSlogan: "超高运行速度，让你的代码运行快人一步",
   },
   {
-    slogan: "login.banner.slogan3",
-    subSlogan: "login.banner.subSlogan3",
+    slogan: "前后端个人独立开发",
+    subSlogan: "前后端已经开源，代码请见GitHub，觉得还不错的话请点个Start",
   },
 ]);
 </script>
