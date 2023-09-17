@@ -30,7 +30,8 @@
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { UserControllerService, UserLoginRequest } from "@/api";
+import { UserControllerService } from "@/api/services/UserControllerService";
+import { UserLoginRequest } from "@/api/models/UserLoginRequest";
 import { reactive } from "vue";
 
 /**
