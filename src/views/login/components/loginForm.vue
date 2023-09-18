@@ -1,0 +1,306 @@
+<template>
+  <div class="login-form-wrapper">
+    <div class="login-form-title">
+      {{ formStatus ? "在线判题OJ系统" : "注册" }}
+    </div>
+    <!--    <div class="login-form-sub-title">欢迎登录 {{ errorMessage }}</div>-->
+    <div class="login-form-error-msg"></div>
+    <a-form
+      ref="loginForm"
+      :model="userInfo"
+      class="login-form"
+      layout="vertical"
+      @submit="handleSubmit"
+    >
+      <!--      用户名和密码登录-->
+      <div v-if="formStatus && !isEmailLogin">
+        <a-form-item
+          field="userAccount"
+          :rules="[{ required: true, message: '用户名不能为空' }]"
+          :validate-trigger="['change', 'blur', 'input']"
+          hide-label
+        >
+          <a-input v-model="userInfo.userAccount" placeholder="请输入用户名">
+            <template #prefix>
+              <icon-user />
+            </template>
+          </a-input>
+        </a-form-item>
+        <a-form-item
+          field="userPassword"
+          :rules="[
+            { required: true, message: '密码不能为空' },
+            { minLength: 8, message: '密码不少于 8 位' },
+          ]"
+          :validate-trigger="['change', 'blur', 'input']"
+          hide-label
+        >
+          <a-input-password
+            v-model="userInfo.userPassword"
+            placeholder="请输入密码"
+            allow-clear
+          >
+            <template #prefix>
+              <icon-lock />
+            </template>
+          </a-input-password>
+        </a-form-item>
+      </div>
+      <!--邮箱登录-->
+      <div v-if="formStatus && isEmailLogin">
+        <a-form-item
+          field="email"
+          :rules="[{ required: true, message: '邮箱账号不能为空' }]"
+          :validate-trigger="['change', 'blur', 'input']"
+          hide-label
+        >
+          <a-input v-model="userInfo.email" placeholder="请输入邮箱账号">
+            <template #prefix>
+              <icon-user />
+            </template>
+          </a-input>
+        </a-form-item>
+        <a-form-item
+          field="emailCode"
+          :rules="[
+            { required: true, message: '验证码不能为空' },
+            { length: 6, message: '验证码为6位' },
+          ]"
+          :validate-trigger="['change', 'blur', 'input']"
+          hide-label
+        >
+          <a-input-search
+            v-model="userInfo.emailCode"
+            placeholder="请输入验证码"
+            allow-clear
+            :button-text="captchaTextRender"
+            search-button
+            @search="handleSendCaptcha"
+          >
+            <template #prefix>
+              <icon-lock />
+            </template>
+          </a-input-search>
+        </a-form-item>
+      </div>
+      <!--用户注册-->
+      <div v-if="!formStatus">
+        <a-form-item
+          field="userAccount"
+          :rules="[{ required: true, message: '用户名不能为空' }]"
+          :validate-trigger="['change', 'blur', 'input']"
+          hide-label
+        >
+          <a-input v-model="userInfo.userAccount" placeholder="请输入用户名">
+            <template #prefix>
+              <icon-user />
+            </template>
+          </a-input>
+        </a-form-item>
+        <a-form-item
+          field="userPassword"
+          :rules="[
+            { required: true, message: '密码不能为空' },
+            { minLength: 8, message: '密码不少于 8 位' },
+          ]"
+          :validate-trigger="['change', 'blur', 'input']"
+          hide-label
+        >
+          <a-input-password
+            v-model="userInfo.userPassword"
+            placeholder="请输入密码"
+            allow-clear
+          >
+            <template #prefix>
+              <icon-lock />
+            </template>
+          </a-input-password>
+        </a-form-item>
+        <a-form-item
+          field="email"
+          :rules="[{ required: true, message: '邮箱账号不能为空' }]"
+          :validate-trigger="['change', 'blur', 'input']"
+          hide-label
+        >
+          <a-input v-model="userInfo.email" placeholder="请输入邮箱账号">
+            <template #prefix>
+              <icon-user />
+            </template>
+          </a-input>
+        </a-form-item>
+        <a-form-item
+          field="emailCode"
+          :rules="[
+            { required: true, message: '验证码不能为空' },
+            { length: 6, message: '验证码为6位' },
+          ]"
+          :validate-trigger="['change', 'blur', 'input']"
+          hide-label
+        >
+          <a-input-search
+            v-model="userInfo.emailCode"
+            placeholder="请输入验证码"
+            allow-clear
+            :button-text="captchaTextRender"
+            search-button
+          >
+            <template #prefix>
+              <icon-lock />
+            </template>
+          </a-input-search>
+        </a-form-item>
+      </div>
+      <a-space :size="16" direction="vertical">
+        <div v-if="formStatus" class="login-form-password-actions">
+          <a-link @click="isEmailLogin = !isEmailLogin">
+            {{ isEmailLogin ? "账号密码登录 " : "邮箱登录" }}
+          </a-link>
+          <a-link>忘记密码?</a-link>
+        </div>
+        <a-button
+          v-if="formStatus"
+          type="primary"
+          html-type="submit"
+          long
+          :loading="loading"
+        >
+          登录
+        </a-button>
+        <div v-if="!formStatus" class="login-form-password-actions">
+          <a-link @click="formStatus = !formStatus">已有账号? 去登陆</a-link>
+        </div>
+        <a-button
+          type="text"
+          long
+          class="login-form-register-btn"
+          @click="registerEvent"
+        >
+          注册账号
+        </a-button>
+      </a-space>
+    </a-form>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { ref, reactive } from "vue";
+import { useRouter } from "vue-router";
+import { ValidatedError } from "@arco-design/web-vue/es/form/interface";
+import { useStore } from "vuex";
+import useLoading from "@/hooks/loading";
+import { UserControllerService, UserLoginRequest } from "@/api";
+import message from "@arco-design/web-vue/es/message";
+
+const router = useRouter();
+const errorMessage = ref("");
+//表单状态、用于判断是登录功能还是注册功能
+const formStatus = ref(true);
+const { loading, setLoading } = useLoading();
+const isEmailLogin = ref(false);
+const store = useStore();
+const captchaTextRender = ref("发送验证码");
+const isAllowCount = ref(true);
+const userInfo = reactive({
+  userAccount: "",
+  userPassword: "",
+  email: "",
+  emailCode: "",
+});
+
+/**
+ * 处理发送邮箱验证码请求
+ */
+const handleSendCaptcha = () => {
+  if (isAllowCount.value) {
+    // 允许计时
+  } else {
+    // 不允许及时
+  }
+};
+
+/**
+ * 登录：处理提交请求
+ * @param errors
+ * @param values
+ */
+const handleSubmit = async ({
+  errors,
+  values,
+}: {
+  errors: Record<string, ValidatedError> | undefined;
+  values: Record<string, any>;
+}) => {
+  if (loading.value) return;
+  if (!errors) {
+    setLoading(true);
+    try {
+      const res = await UserControllerService.userLoginUsingPost(values);
+      // 登录成功，跳转到主页
+      if (res.code === 0) {
+        await store.dispatch("user/getLoginUser", res);
+        await router.push({
+          path: "/",
+          replace: true,
+        });
+        message.success("登陆成功");
+      } else {
+        message.error("登陆失败，" + res.message);
+      }
+    } catch (err) {
+      errorMessage.value = (err as Error).message;
+    } finally {
+      setLoading(false);
+    }
+  }
+};
+
+/**
+ * 注册按钮点击事件
+ */
+const registerEvent = () => {
+  if (formStatus.value) {
+    //如果为真，表明当前为登录页面，需要切换到注册页面
+    formStatus.value = false;
+  } else {
+    // 否则，进行注册操作
+  }
+};
+</script>
+
+<style lang="less" scoped>
+.login-form {
+  &-wrapper {
+    width: 320px;
+  }
+
+  &-title {
+    color: var(--color-text-1);
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 32px;
+    align-items: center;
+    text-align: center;
+  }
+
+  &-sub-title {
+    color: var(--color-text-3);
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  &-error-msg {
+    height: 32px;
+    color: rgb(var(--red-6));
+    line-height: 32px;
+  }
+
+  &-password-actions {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &-register-btn {
+    color: var(--color-text-3) !important;
+  }
+}
+</style>

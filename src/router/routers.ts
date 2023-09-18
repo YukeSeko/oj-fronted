@@ -1,7 +1,6 @@
 import { RouteRecordRaw } from "vue-router";
 import NoAuthView from "@/views/NoAuthView.vue";
 // import UserLayout from "@/layouts/UserLayout.vue";
-import UserLoginView from "@/views/user/UserLoginView.vue";
 import UserLoginIndex from "@/views/login/LoginIndex.vue";
 
 export const routes: Array<RouteRecordRaw> = [
@@ -12,11 +11,6 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: "/user/login",
         name: "用户登录",
-        component: UserLoginView,
-      },
-      {
-        path: "/user/register",
-        name: "用户注册",
         component: UserLoginIndex,
       },
     ],

@@ -22,7 +22,7 @@
 <script lang="ts" setup>
 import Footer from "@/components/LoginFooter.vue";
 import LoginBanner from "./components/loginBanner.vue";
-import LoginForm from "./components/login-form.vue";
+import LoginForm from "./components/loginForm.vue";
 </script>
 
 <style lang="less" scoped>
