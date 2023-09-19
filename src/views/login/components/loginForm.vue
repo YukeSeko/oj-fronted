@@ -6,7 +6,7 @@
     <!--    <div class="login-form-sub-title">欢迎登录 {{ errorMessage }}</div>-->
     <div class="login-form-error-msg"></div>
     <a-form
-      ref="loginForm"
+      ref="loginFormRef"
       :model="userInfo"
       class="login-form"
       layout="vertical"
@@ -50,13 +50,19 @@
       <div v-if="formStatus && isEmailLogin">
         <a-form-item
           field="email"
-          :rules="[{ required: true, message: '邮箱账号不能为空' }]"
+          :rules="[
+            { required: true, message: '邮箱账号不能为空' },
+            {
+              type: 'email',
+              message: '请输入正确的邮箱',
+            },
+          ]"
           :validate-trigger="['change', 'blur', 'input']"
           hide-label
         >
           <a-input v-model="userInfo.email" placeholder="请输入邮箱账号">
             <template #prefix>
-              <icon-user />
+              <icon-email />
             </template>
           </a-input>
         </a-form-item>
@@ -76,6 +82,7 @@
             :button-text="captchaTextRender"
             search-button
             @search="handleSendCaptcha"
+            :button-props="{ disabled: !isAllowCount }"
           >
             <template #prefix>
               <icon-lock />
@@ -118,13 +125,19 @@
         </a-form-item>
         <a-form-item
           field="email"
-          :rules="[{ required: true, message: '邮箱账号不能为空' }]"
+          :rules="[
+            { required: true, message: '邮箱账号不能为空' },
+            {
+              type: 'email',
+              message: '请输入正确的邮箱',
+            },
+          ]"
           :validate-trigger="['change', 'blur', 'input']"
           hide-label
         >
           <a-input v-model="userInfo.email" placeholder="请输入邮箱账号">
             <template #prefix>
-              <icon-user />
+              <icon-email />
             </template>
           </a-input>
         </a-form-item>
@@ -143,6 +156,8 @@
             allow-clear
             :button-text="captchaTextRender"
             search-button
+            @search="handleSendCaptcha"
+            :button-props="{ disabled: !isAllowCount }"
           >
             <template #prefix>
               <icon-lock />
@@ -199,7 +214,9 @@ const { loading, setLoading } = useLoading();
 const isEmailLogin = ref(false);
 const store = useStore();
 const captchaTextRender = ref("发送验证码");
+const timer = ref(60); //倒计时
 const isAllowCount = ref(true);
+const loginFormRef = ref(null);
 const userInfo = reactive({
   userAccount: "",
   userPassword: "",
@@ -210,11 +227,30 @@ const userInfo = reactive({
 /**
  * 处理发送邮箱验证码请求
  */
-const handleSendCaptcha = () => {
+const handleSendCaptcha = async () => {
   if (isAllowCount.value) {
     // 允许计时
-  } else {
-    // 不允许及时
+    const times = setInterval(() => {
+      if (timer.value === 0) {
+        clearInterval(times);
+        isAllowCount.value = true;
+        timer.value = 60;
+        captchaTextRender.value = "发送验证码";
+        return;
+      } else {
+        isAllowCount.value = false;
+        timer.value--;
+        captchaTextRender.value = timer.value + "后可重新发送";
+      }
+    }, 1000);
+    try {
+      const res = await UserControllerService.getSendMailCode(userInfo.email);
+      if (res.code === 0) {
+        message.success("验证码发送成功");
+      }
+    } catch (e) {
+      message.error("发送失败，" + (e as Error).message);
+    }
   }
 };
 
@@ -263,6 +299,13 @@ const registerEvent = () => {
     formStatus.value = false;
   } else {
     // 否则，进行注册操作
+    loginFormRef?.value?.validate(
+      (errors: undefined | Record<string, ValidatedError>) => {
+        if (errors == void 0) {
+          // 表单验证通过
+        }
+      }
+    );
   }
 };
 </script>

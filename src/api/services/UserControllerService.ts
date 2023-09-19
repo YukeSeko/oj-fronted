@@ -67,6 +67,29 @@ export class UserControllerService {
   }
 
   /**
+   * getSendMailCode
+   * @param mail mail
+   * @returns BaseResponse_User_ | any OK
+   * @throws ApiError
+   */
+  public static getSendMailCode(
+      mail?: string
+  ): CancelablePromise<BaseResponse_User_ | any> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/api/user/sendMailCode",
+      query: {
+        mail: mail,
+      },
+      errors: {
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        404: `Not Found`,
+      },
+    });
+  }
+
+  /**
    * getUserById
    * @param id id
    * @returns BaseResponse_User_ OK
