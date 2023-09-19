@@ -73,7 +73,7 @@ export class UserControllerService {
    * @throws ApiError
    */
   public static getSendMailCode(
-      mail?: string
+    mail?: string
   ): CancelablePromise<BaseResponse_User_ | any> {
     return __request(OpenAPI, {
       method: "GET",

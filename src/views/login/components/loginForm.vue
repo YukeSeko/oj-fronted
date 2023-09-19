@@ -124,6 +124,25 @@
           </a-input-password>
         </a-form-item>
         <a-form-item
+          field="checkPassword"
+          :rules="[
+            { required: true, message: '请再次输入密码' },
+            { minLength: 8, message: '密码不少于 8 位' },
+          ]"
+          :validate-trigger="['change', 'blur', 'input']"
+          hide-label
+        >
+          <a-input-password
+            v-model="userInfo.checkPassword"
+            placeholder="请再次输入密码"
+            allow-clear
+          >
+            <template #prefix>
+              <icon-lock />
+            </template>
+          </a-input-password>
+        </a-form-item>
+        <a-form-item
           field="email"
           :rules="[
             { required: true, message: '邮箱账号不能为空' },
@@ -167,7 +186,12 @@
       </div>
       <a-space :size="16" direction="vertical">
         <div v-if="formStatus" class="login-form-password-actions">
-          <a-link @click="isEmailLogin = !isEmailLogin">
+          <a-link
+            @click="
+              isEmailLogin = !isEmailLogin;
+              loginFormRef?.value?.resetFields();
+            "
+          >
             {{ isEmailLogin ? "账号密码登录 " : "邮箱登录" }}
           </a-link>
           <a-link>忘记密码?</a-link>
@@ -182,13 +206,20 @@
           登录
         </a-button>
         <div v-if="!formStatus" class="login-form-password-actions">
-          <a-link @click="formStatus = !formStatus">已有账号? 去登陆</a-link>
+          <a-link
+            @click="
+              formStatus = !formStatus;
+              loginFormRef?.value?.resetFields();
+            "
+            >已有账号? 去登陆
+          </a-link>
         </div>
         <a-button
           type="text"
           long
           class="login-form-register-btn"
           @click="registerEvent"
+          :loading="loading"
         >
           注册账号
         </a-button>
@@ -203,7 +234,11 @@ import { useRouter } from "vue-router";
 import { ValidatedError } from "@arco-design/web-vue/es/form/interface";
 import { useStore } from "vuex";
 import useLoading from "@/hooks/loading";
-import { UserControllerService, UserLoginRequest } from "@/api";
+import {
+  UserControllerService,
+  UserLoginRequest,
+  UserRegisterRequest,
+} from "@/api";
 import message from "@arco-design/web-vue/es/message";
 
 const router = useRouter();
@@ -220,6 +255,7 @@ const loginFormRef = ref(null);
 const userInfo = reactive({
   userAccount: "",
   userPassword: "",
+  checkPassword: "",
   email: "",
   emailCode: "",
 });
@@ -269,23 +305,28 @@ const handleSubmit = async ({
   if (loading.value) return;
   if (!errors) {
     setLoading(true);
-    try {
-      const res = await UserControllerService.userLoginUsingPost(values);
-      // 登录成功，跳转到主页
-      if (res.code === 0) {
-        await store.dispatch("user/getLoginUser", res);
-        await router.push({
-          path: "/",
-          replace: true,
-        });
-        message.success("登陆成功");
-      } else {
-        message.error("登陆失败，" + res.message);
+    if (!isEmailLogin.value) {
+      // 通过账号密码进行登录
+      try {
+        const res = await UserControllerService.userLoginUsingPost(values);
+        // 登录成功，跳转到主页
+        if (res.code === 0) {
+          await store.dispatch("user/getLoginUser", res);
+          await router.push({
+            path: "/",
+            replace: true,
+          });
+          message.success("登陆成功");
+        } else {
+          message.error("登陆失败，" + res.message);
+        }
+      } catch (err) {
+        errorMessage.value = (err as Error).message;
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      errorMessage.value = (err as Error).message;
-    } finally {
-      setLoading(false);
+    } else {
+      // 通过邮箱进行登录
     }
   }
 };
@@ -297,12 +338,28 @@ const registerEvent = () => {
   if (formStatus.value) {
     //如果为真，表明当前为登录页面，需要切换到注册页面
     formStatus.value = false;
+    loginFormRef?.value?.resetFields();
   } else {
     // 否则，进行注册操作
     loginFormRef?.value?.validate(
-      (errors: undefined | Record<string, ValidatedError>) => {
+      async (errors: undefined | Record<string, ValidatedError>) => {
         if (errors == void 0) {
+          setLoading(true);
           // 表单验证通过
+          try {
+            const res = await UserControllerService.userRegisterUsingPost(
+              userInfo as UserRegisterRequest
+            );
+            if (res.code === 0) {
+              message.success("注册成功");
+              loginFormRef?.value?.resetFields();
+              formStatus.value = true;
+            }
+          } catch (e) {
+            message.error("注册失败，" + (e as Error).message);
+          } finally {
+            setLoading(false);
+          }
         }
       }
     );
