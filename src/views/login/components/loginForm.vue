@@ -127,7 +127,7 @@
           field="checkPassword"
           :rules="[
             { required: true, message: '请再次输入密码' },
-            { minLength: 8, message: '密码不少于 8 位' },
+            { validator: validPassword, required: true },
           ]"
           :validate-trigger="['change', 'blur', 'input']"
           hide-label
@@ -363,6 +363,21 @@ const registerEvent = () => {
         }
       }
     );
+  }
+};
+
+/**
+ * 校验密码是否一致
+ * @param value
+ * @param callback
+ */
+const validPassword = (value: any, callback: any) => {
+  if (value === "") {
+    callback("请再次输入密码");
+  } else if (value !== userInfo.userPassword) {
+    callback("两次密码输入不一致");
+  } else {
+    callback();
   }
 };
 </script>
