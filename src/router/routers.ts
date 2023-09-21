@@ -2,6 +2,7 @@ import { RouteRecordRaw } from "vue-router";
 import NoAuthView from "@/views/NoAuthView.vue";
 // import UserLayout from "@/layouts/UserLayout.vue";
 import UserLoginIndex from "@/views/login/LoginIndex.vue";
+import Workplace from "@/views/workplace/index.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -17,6 +18,11 @@ export const routes: Array<RouteRecordRaw> = [
     meta: {
       hideInMenu: true,
     },
+  },
+  {
+    path: "/workplace",
+    name: "个人数据总览",
+    component: Workplace,
   },
   // {
   //   path: "/questions",

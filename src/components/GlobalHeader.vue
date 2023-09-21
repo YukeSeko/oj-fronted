@@ -12,8 +12,11 @@
           disabled
         >
           <div class="title-bar">
-            <img class="logo" src="../assets/logo.png" />
-            <div class="title">OJ</div>
+            <img
+              class="logo"
+              src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
+            />
+            <div class="title">YukeSeko OJ</div>
           </div>
         </a-menu-item>
         <a-menu-item v-for="item in visibleRoutes" :key="item.path">
