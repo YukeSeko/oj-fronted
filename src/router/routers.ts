@@ -3,6 +3,9 @@ import NoAuthView from "@/views/NoAuthView.vue";
 // import UserLayout from "@/layouts/UserLayout.vue";
 import UserLoginIndex from "@/views/login/LoginIndex.vue";
 import Workplace from "@/views/workplace/index.vue";
+import AddQuestionView from "@/views/question/AddQuestionView.vue";
+import ACCESS_ENUM from "@/access/accessEnum";
+import ManageQuestionView from "@/views/question/ManageQuestionView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -44,31 +47,31 @@ export const routes: Array<RouteRecordRaw> = [
   //     hideInMenu: true,
   //   },
   // },
-  // {
-  //   path: "/add/question",
-  //   name: "创建题目",
-  //   component: AddQuestionView,
-  //   meta: {
-  //     access: ACCESS_ENUM.USER,
-  //   },
-  // },
-  // {
-  //   path: "/update/question",
-  //   name: "更新题目",
-  //   component: AddQuestionView,
-  //   meta: {
-  //     access: ACCESS_ENUM.USER,
-  //     hideInMenu: true,
-  //   },
-  // },
-  // {
-  //   path: "/manage/question/",
-  //   name: "管理题目",
-  //   component: ManageQuestionView,
-  //   meta: {
-  //     access: ACCESS_ENUM.ADMIN,
-  //   },
-  // },
+  {
+    path: "/add/question",
+    name: "创建题目",
+    component: AddQuestionView,
+    meta: {
+      access: ACCESS_ENUM.USER,
+    },
+  },
+  {
+    path: "/update/question",
+    name: "更新题目",
+    component: AddQuestionView,
+    meta: {
+      access: ACCESS_ENUM.USER,
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "/manage/question/",
+    name: "管理题目",
+    component: ManageQuestionView,
+    meta: {
+      access: ACCESS_ENUM.ADMIN,
+    },
+  },
   // {
   //   path: "/",
   //   name: "主页",
