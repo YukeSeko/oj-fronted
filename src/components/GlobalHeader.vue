@@ -25,11 +25,30 @@
       </a-menu>
     </a-col>
     <a-col flex="100px">
-      <div>
-        {{ store.state.user?.loginUser?.userName ?? "未登录" }}
-      </div>
+      <a-dropdown trigger="hover">
+        <a-avatar :size="55">
+          {{ store.state.user?.loginUser?.userName ?? "未登录" }}
+        </a-avatar>
+        <template #content>
+          <a-doption @click="visible = true">
+            <template #icon>
+              <icon-import />
+            </template>
+            <template #default>退出登录</template>
+          </a-doption>
+        </template>
+      </a-dropdown>
     </a-col>
   </a-row>
+  <a-modal
+    v-model:visible="visible"
+    @ok="loginOut"
+    @cancel="visible = false"
+    message-type="warning"
+  >
+    <template #title>退出登录</template>
+    <div>您确定要退出登录吗？</div>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
@@ -38,11 +57,14 @@ import { routes } from "@/router/routers";
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import checkAccess from "@/access/checkAccess";
+import { UserControllerService } from "@/api";
+import message from "@arco-design/web-vue/es/message";
 
 const store = useStore();
 const router = useRouter();
 // 默认主页
 const selectedKeys = ref(["/"]);
+const visible = ref(false);
 
 // 路由跳转后，更新选中的菜单项
 router.afterEach((to, from, failure) => {
@@ -52,6 +74,21 @@ router.afterEach((to, from, failure) => {
 onMounted(() => {
   console.log(store.state.user.loginUser);
 });
+
+const loginOut = () => {
+  try {
+    console.log("退出登录");
+    UserControllerService.userLogoutUsingPost();
+    //退出登录后跳转到登录页面
+    router.push({
+      path: "/user/login",
+      replace: true,
+    });
+    message.success("退出成功！");
+  } catch (e) {
+    console.log("退出操作异常");
+  }
+};
 
 // 展示在菜单的路由数组
 const visibleRoutes = computed(() => {
