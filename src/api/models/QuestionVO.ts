@@ -11,7 +11,7 @@ export type QuestionVO = {
     content?: string;
     createTime?: string;
     favourNum?: number;
-    id?: number;
+    id?: string;
     judgeConfig?: JudgeConfig;
     submitNum?: number;
     tags?: Array<string>;
