@@ -26,7 +26,11 @@ import message from "@arco-design/web-vue/es/message";
 
 const route = useRoute();
 router.beforeEach(async (to, from, next) => {
-  if (to.path === "/user/login") {
+  if (
+    to.path === "/user/login" ||
+    to.path === "/" ||
+    to.path === "/questions"
+  ) {
     //如果是去登录页面，直接放行
     next();
     return;

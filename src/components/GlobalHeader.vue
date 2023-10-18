@@ -30,11 +30,15 @@
           {{ store.state.user?.loginUser?.userName ?? "未登录" }}
         </a-avatar>
         <template #content>
-          <a-doption @click="visible = true">
+          <a-doption @click="dropSubmit">
             <template #icon>
               <icon-import />
             </template>
-            <template #default>退出登录</template>
+            <template #default
+              >{{
+                store.state.user?.loginUser?.userName ? "立即登录" : "退出登录"
+              }}
+            </template>
           </a-doption>
         </template>
       </a-dropdown>
@@ -75,6 +79,9 @@ onMounted(() => {
   console.log(store.state.user.loginUser);
 });
 
+/**
+ * 处理退出请求
+ */
 const loginOut = () => {
   try {
     console.log("退出登录");
@@ -87,6 +94,20 @@ const loginOut = () => {
     message.success("退出成功！");
   } catch (e) {
     console.log("退出操作异常");
+  }
+};
+
+/**
+ * 处理头像下拉框操作
+ */
+const dropSubmit = () => {
+  if (store.state.user?.loginUser?.userNamel) {
+    visible.value = true;
+  } else {
+    router.push({
+      path: "/user/login",
+      replace: true,
+    });
   }
 };
 
