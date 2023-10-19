@@ -186,12 +186,7 @@
       </div>
       <a-space :size="16" direction="vertical">
         <div v-if="formStatus" class="login-form-password-actions">
-          <a-link
-            @click="
-              isEmailLogin = !isEmailLogin;
-              loginFormRef?.value?.resetFields();
-            "
-          >
+          <a-link @click="changeLoginMethod">
             {{ isEmailLogin ? "账号密码登录 " : "邮箱登录" }}
           </a-link>
           <a-link>忘记密码?</a-link>
@@ -240,6 +235,8 @@ import {
   UserRegisterRequest,
 } from "@/api";
 import message from "@arco-design/web-vue/es/message";
+import { UserLoginByMailRequest } from "@/api/models/UserLoginByMailRequest";
+import user from "@/store/user";
 
 const router = useRouter();
 const errorMessage = ref("");
@@ -305,29 +302,49 @@ const handleSubmit = async ({
   if (loading.value) return;
   if (!errors) {
     setLoading(true);
+    let res;
     if (!isEmailLogin.value) {
       // 通过账号密码进行登录
       try {
-        const res = await UserControllerService.userLoginUsingPost(values);
-        // 登录成功，跳转到主页
-        if (res.code === 0) {
-          await store.dispatch("user/getLoginUser", res);
-          await router.push({
-            path: "/",
-            replace: true,
-          });
-          message.success("登陆成功");
-        } else {
-          message.error("登陆失败，" + res.message);
-        }
+        res = await UserControllerService.userLoginUsingPost(values);
       } catch (err) {
-        errorMessage.value = (err as Error).message;
-      } finally {
+        //出现异常就return
+        message.error("登陆失败，请重试");
         setLoading(false);
+        return;
       }
     } else {
       // 通过邮箱进行登录
+      try {
+        const UserLoginByMailRequest = {
+          mail: values.email,
+          mailCode: values.emailCode,
+        };
+        res = await UserControllerService.userLoginByEmailUsingPost(
+          UserLoginByMailRequest
+        );
+      } catch (e) {
+        // 出现异常就return
+        message.error("登陆失败，请重试");
+        setLoading(false);
+        return;
+      }
     }
+    // 登录成功，跳转到主页
+    if (res.code === 0) {
+      // 拿到请求路径中的重定向路径，如果有的话，就跳转到携带的路径上如果没有，就跳转到个人页面
+      const toPath = router.currentRoute.value.fullPath.split("=");
+      console.log(toPath[1]);
+      await store.dispatch("user/getLoginUser", res);
+      await router.push({
+        path: toPath[1] === undefined ? "/workplace" : toPath[1],
+        replace: true,
+      });
+      message.success("登陆成功");
+    } else {
+      message.error("登陆失败，" + res.message);
+    }
+    setLoading(false);
   }
 };
 
@@ -379,6 +396,15 @@ const validPassword = (value: any, callback: any) => {
   } else {
     callback();
   }
+};
+
+/**
+ * 更换登录方式
+ */
+const changeLoginMethod = () => {
+  isEmailLogin.value = !isEmailLogin.value;
+  //重置表单数据
+  loginFormRef?.value?.resetFields();
 };
 </script>
 

@@ -20,6 +20,7 @@ import type { UserUpdateRequest } from "../models/UserUpdateRequest";
 import type { CancelablePromise } from "../core/CancelablePromise";
 import { OpenAPI } from "../core/OpenAPI";
 import { request as __request } from "../core/request";
+import {UserLoginByMailRequest} from "@/api/models/UserLoginByMailRequest";
 
 export class UserControllerService {
   /**
@@ -217,6 +218,29 @@ export class UserControllerService {
       },
     });
   }
+
+  /**
+   * userLogin
+   * @param userLoginRequest userLoginRequest
+   * @returns BaseResponse_LoginUserVO_ OK
+   * @returns any Created
+   * @throws ApiError
+   */
+  public static userLoginByEmailUsingPost(
+      UserLoginByMailRequest: UserLoginByMailRequest
+  ): CancelablePromise<BaseResponse_LoginUserVO_ | any> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/api/user/loginByMail",
+      body: UserLoginByMailRequest,
+      errors: {
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        404: `Not Found`,
+      },
+    });
+  }
+
 
   /**
    * userLoginByWxOpen

@@ -24,11 +24,11 @@
         </a-menu-item>
       </a-menu>
     </a-col>
-    <a-col flex="100px">
+    <a-col flex="160px">
       <a-dropdown trigger="hover">
-        <a-avatar :size="55">
-          {{ store.state.user?.loginUser?.userName ?? "未登录" }}
-        </a-avatar>
+        <span>
+          {{ store.state.user?.loginUser?.userName ?? "请登录" }}<icon-down />
+        </span>
         <template #content>
           <a-doption @click="dropSubmit">
             <template #icon>
@@ -36,7 +36,9 @@
             </template>
             <template #default
               >{{
-                store.state.user?.loginUser?.userName ? "立即登录" : "退出登录"
+                store.state.user?.loginUser?.userName === "未登录"
+                  ? "立即登录"
+                  : "退出登录"
               }}
             </template>
           </a-doption>
@@ -101,7 +103,7 @@ const loginOut = () => {
  * 处理头像下拉框操作
  */
 const dropSubmit = () => {
-  if (store.state.user?.loginUser?.userNamel) {
+  if (store.state.user?.loginUser?.userName) {
     visible.value = true;
   } else {
     router.push({

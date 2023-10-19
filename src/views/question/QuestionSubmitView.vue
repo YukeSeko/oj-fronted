@@ -90,9 +90,9 @@ watchEffect(() => {
 /**
  * 页面加载时，请求数据
  */
-onMounted(() => {
-  loadData();
-});
+// onMounted(() => {
+//   loadData();
+// });
 
 const columns = [
   {

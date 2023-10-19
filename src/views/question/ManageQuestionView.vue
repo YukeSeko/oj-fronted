@@ -60,9 +60,9 @@ watchEffect(() => {
 /**
  * 页面加载时，请求数据
  */
-onMounted(() => {
-  loadData();
-});
+// onMounted(() => {
+//   loadData();
+// });
 
 // {id: "1", title: "A+ D", content: "新的题目内容", tags: "["二叉树"]", answer: "新的答案", submitNum: 0,…}
 
