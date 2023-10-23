@@ -10,11 +10,6 @@
         <a-link @click="router.push('/question_submit')">查看更多</a-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
-        <!--        <a-radio-group v-model:model-value="type" type="button">-->
-        <!--          <a-radio value="text"> 3 </a-radio>-->
-        <!--          <a-radio value="image"> 4 </a-radio>-->
-        <!--          <a-radio value="video"> 5 </a-radio>-->
-        <!--        </a-radio-group>-->
         <a-table
           :data="renderList"
           :pagination="false"
@@ -22,8 +17,8 @@
           :scroll="{ x: '100%', y: '264px' }"
         >
           <template #columns>
-            <a-table-column title="排名" data-index="key"></a-table-column>
-            <a-table-column title="内容标题" data-index="title">
+            <a-table-column title="题目名称" data-index="key"></a-table-column>
+            <a-table-column title="标签" data-index="title">
               <template #cell="{ record }">
                 <a-typography-paragraph
                   :ellipsis="{
@@ -34,10 +29,10 @@
                 </a-typography-paragraph>
               </template>
             </a-table-column>
-            <a-table-column title="点击量" data-index="clickNumber">
+            <a-table-column title="是否通过" data-index="clickNumber">
             </a-table-column>
             <a-table-column
-              title="日涨幅"
+              title="提交日期"
               data-index="increases"
               :sortable="{
                 sortDirections: ['ascend', 'descend'],
