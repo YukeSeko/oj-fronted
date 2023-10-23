@@ -7,7 +7,7 @@
     >
       <template #title> 最近提交</template>
       <template #extra>
-        <a-link>查看更多</a-link>
+        <a-link @click="router.push('/question_submit')">查看更多</a-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
         <!--        <a-radio-group v-model:model-value="type" type="button">-->
@@ -64,6 +64,7 @@
 import { ref } from "vue";
 import useLoading from "@/hooks/loading";
 import type { TableData } from "@arco-design/web-vue/es/table/interface";
+import router from "@/router";
 
 const type = ref("text");
 const { loading, setLoading } = useLoading();

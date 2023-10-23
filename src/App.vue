@@ -26,6 +26,18 @@ import message from "@arco-design/web-vue/es/message";
 
 const route = useRoute();
 router.beforeEach(async (to, from, next) => {
+  let loginUser = store.state.user.loginUser;
+  if (!loginUser || !loginUser.userRole) {
+    // 加 await 是为了等用户登录成功之后，再执行后续的代码
+    await store.dispatch("user/getLoginUser");
+    loginUser = store.state.user.loginUser;
+    if (loginUser.userName != "未登录" && to.path === "/user/login") {
+      //如果已经登录且跳转的是登录页面就禁止进入
+      next(`/workplace`);
+      message.success("登录成功！");
+      return;
+    }
+  }
   if (
     to.path === "/user/login" ||
     to.path === "/" ||
@@ -35,21 +47,14 @@ router.beforeEach(async (to, from, next) => {
     next();
     return;
   }
-  let loginUser = store.state.user.loginUser;
-  // 如果之前没登陆过，自动登录
-  if (!loginUser || !loginUser.userRole) {
-    // 加 await 是为了等用户登录成功之后，再执行后续的代码
-    await store.dispatch("user/getLoginUser");
-    loginUser = store.state.user.loginUser;
-    if (
-      !loginUser ||
-      !loginUser.userRole ||
-      loginUser.userRole === ACCESS_ENUM.NOT_LOGIN
-    ) {
-      next(`/user/login?redirect=${to.fullPath}`);
-      message.info("请先登录！");
-      return;
-    }
+  if (
+    !loginUser ||
+    !loginUser.userRole ||
+    loginUser.userRole === ACCESS_ENUM.NOT_LOGIN
+  ) {
+    next(`/user/login?redirect=${to.fullPath}`);
+    message.info("请先登录！");
+    return;
   }
   const needAccess = (to.meta?.access as string) ?? ACCESS_ENUM.NOT_LOGIN;
   // 要跳转的页面必须要登陆

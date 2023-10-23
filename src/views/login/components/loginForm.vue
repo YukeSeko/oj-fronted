@@ -229,14 +229,8 @@ import { useRouter } from "vue-router";
 import { ValidatedError } from "@arco-design/web-vue/es/form/interface";
 import { useStore } from "vuex";
 import useLoading from "@/hooks/loading";
-import {
-  UserControllerService,
-  UserLoginRequest,
-  UserRegisterRequest,
-} from "@/api";
+import { UserControllerService, UserRegisterRequest } from "@/api";
 import message from "@arco-design/web-vue/es/message";
-import { UserLoginByMailRequest } from "@/api/models/UserLoginByMailRequest";
-import user from "@/store/user";
 
 const router = useRouter();
 const errorMessage = ref("");
@@ -261,30 +255,40 @@ const userInfo = reactive({
  * 处理发送邮箱验证码请求
  */
 const handleSendCaptcha = async () => {
-  if (isAllowCount.value) {
-    // 允许计时
-    const times = setInterval(() => {
-      if (timer.value === 0) {
-        clearInterval(times);
-        isAllowCount.value = true;
-        timer.value = 60;
-        captchaTextRender.value = "发送验证码";
-        return;
-      } else {
-        isAllowCount.value = false;
-        timer.value--;
-        captchaTextRender.value = timer.value + "后可重新发送";
+  loginFormRef?.value?.validateField(
+    "email",
+    async (errors: undefined | Record<string, ValidatedError>) => {
+      if (errors == void 0) {
+        //校验通过
+        if (isAllowCount.value) {
+          // 允许计时
+          const times = setInterval(() => {
+            if (timer.value === 0) {
+              clearInterval(times);
+              isAllowCount.value = true;
+              timer.value = 60;
+              captchaTextRender.value = "发送验证码";
+              return;
+            } else {
+              isAllowCount.value = false;
+              timer.value--;
+              captchaTextRender.value = timer.value + "后可重新发送";
+            }
+          }, 1000);
+          try {
+            const res = await UserControllerService.getSendMailCode(
+              userInfo.email
+            );
+            if (res.code === 0) {
+              message.success("验证码发送成功");
+            }
+          } catch (e) {
+            message.error("发送失败，" + (e as Error).message);
+          }
+        }
       }
-    }, 1000);
-    try {
-      const res = await UserControllerService.getSendMailCode(userInfo.email);
-      if (res.code === 0) {
-        message.success("验证码发送成功");
-      }
-    } catch (e) {
-      message.error("发送失败，" + (e as Error).message);
     }
-  }
+  );
 };
 
 /**
@@ -334,7 +338,6 @@ const handleSubmit = async ({
     if (res.code === 0) {
       // 拿到请求路径中的重定向路径，如果有的话，就跳转到携带的路径上如果没有，就跳转到个人页面
       const toPath = router.currentRoute.value.fullPath.split("=");
-      console.log(toPath[1]);
       await store.dispatch("user/getLoginUser", res);
       await router.push({
         path: toPath[1] === undefined ? "/workplace" : toPath[1],

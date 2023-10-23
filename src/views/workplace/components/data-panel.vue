@@ -12,7 +12,7 @@
           />
         </a-avatar>
         <a-statistic
-          title="题解总数"
+          title="提交总数"
           :value="373"
           :value-from="0"
           animation
@@ -34,7 +34,7 @@
           />
         </a-avatar>
         <a-statistic
-          title="投放中内容"
+          title="已解决题目数"
           :value="368"
           :value-from="0"
           animation

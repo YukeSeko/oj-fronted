@@ -103,7 +103,7 @@ const loginOut = () => {
  * 处理头像下拉框操作
  */
 const dropSubmit = () => {
-  if (store.state.user?.loginUser?.userName) {
+  if (store.state.user?.loginUser?.userName !== "未登录") {
     visible.value = true;
   } else {
     router.push({
