@@ -34,7 +34,11 @@
       @page-change="onPageChange"
     >
       <template #judgeInfo="{ record }">
-        {{ JSON.stringify(record.judgeInfo) }}
+        <a-tag
+          :color="record.judgeInfo === '暂无判题信息' ? '#00b42a' : '#f53f3f'"
+        >
+          {{ record.judgeInfo }}
+        </a-tag>
       </template>
       <template #createTime="{ record }">
         {{ moment(record.createTime).format("YYYY-MM-DD") }}

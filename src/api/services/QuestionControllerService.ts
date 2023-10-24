@@ -21,8 +21,29 @@ import {QuestionSubmitAddRequest} from "@/api/models/QuestionSubmitAddRequest";
 import {QuestionSubmitQueryRequest} from "@/api/models/QuestionSubmitQueryRequest";
 import {BaseResponse_Page_QuestionSubmitVO_} from "@/api/models/BaseResponse_Page_QuestionSubmitVO_";
 import {QuestionUpdateRequest} from "@/api/models/QuestionUpdateRequest";
+import {BaseResponse_LoginUserVO_} from "@/api";
 
 export class QuestionControllerService {
+
+  /**
+   * getLoginUser
+   * @returns BaseResponse_LoginUserVO_ OK
+   * @throws ApiError
+   */
+  public static getPersonalData(): CancelablePromise<BaseResponse_long_ | any> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/api/question/getPersonalData",
+      errors: {
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        404: `Not Found`,
+      },
+    });
+  }
+
+
+
   /**
    * addQuestion
    * @param questionAddRequest questionAddRequest

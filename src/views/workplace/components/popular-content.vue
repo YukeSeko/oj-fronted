@@ -7,7 +7,7 @@
     >
       <template #title> 最近提交</template>
       <template #extra>
-        <a-link @click="router.push('/question_submit')">查看更多</a-link>
+        <a-link>查看更多</a-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
         <a-table
@@ -29,7 +29,7 @@
                 </a-typography-paragraph>
               </template>
             </a-table-column>
-            <a-table-column title="是否通过" data-index="clickNumber">
+            <a-table-column title="判题结果" data-index="clickNumber">
             </a-table-column>
             <a-table-column
               title="提交日期"

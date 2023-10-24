@@ -13,8 +13,7 @@
         </a-avatar>
         <a-statistic
           title="提交总数"
-          :value="373"
-          :value-from="0"
+          :value="totalSubmit"
           animation
           show-group-separator
         >
@@ -102,7 +101,17 @@
   </a-grid>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { onMounted, ref } from "vue";
+import { QuestionControllerService } from "@/api/services/QuestionControllerService";
+
+const totalSubmit = ref(0);
+onMounted(async () => {
+  //初始化个人数据
+  const personalData = await QuestionControllerService.getPersonalData();
+  totalSubmit.value = parseInt(personalData.data);
+});
+</script>
 
 <style lang="less" scoped>
 .arco-grid.panel {

@@ -2,7 +2,7 @@
   <a-col class="banner">
     <a-col :span="8">
       <a-typography-title :heading="5" style="margin-top: 0">
-        欢迎回来！ wazy
+        欢迎回来！ {{ store.state.user.loginUser.userName }}
       </a-typography-title>
     </a-col>
     <a-divider class="panel-border" />
@@ -12,6 +12,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { useStore } from "vuex";
+import store from "../../../store";
 
 const userStore = useStore();
 const userInfo = computed(() => {
