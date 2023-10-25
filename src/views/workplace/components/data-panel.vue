@@ -13,7 +13,7 @@
         </a-avatar>
         <a-statistic
           title="提交总数"
-          :value="totalSubmit"
+          :value="commitCount"
           animation
           show-group-separator
         >
@@ -34,7 +34,7 @@
         </a-avatar>
         <a-statistic
           title="已解决题目数"
-          :value="368"
+          :value="questionSolveCount"
           :value-from="0"
           animation
           show-group-separator
@@ -104,12 +104,20 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { QuestionControllerService } from "@/api/services/QuestionControllerService";
+import message from "@arco-design/web-vue/es/message";
 
-const totalSubmit = ref(0);
+const commitCount = ref(0);
+const questionSolveCount = ref(0);
 onMounted(async () => {
-  //初始化个人数据
-  const personalData = await QuestionControllerService.getPersonalData();
-  totalSubmit.value = parseInt(personalData.data);
+  try {
+    //初始化个人数据
+    const personalData = await QuestionControllerService.getPersonalData();
+    commitCount.value = parseInt(personalData.data.commitCount);
+    questionSolveCount.value = parseInt(personalData.data.questionSolveCount);
+  } catch (e) {
+    //todo
+    message.error("系统异常");
+  }
 });
 </script>
 

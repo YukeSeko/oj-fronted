@@ -17,15 +17,31 @@
 import useLoading from "@/hooks/loading";
 import useChartOption from "@/hooks/chart-option";
 import ChartComponents from "@/components/ChartComponents.vue";
+import { onMounted, ref } from "vue";
+import { QuestionControllerService } from "@/api/services/QuestionControllerService";
 
 const { loading } = useLoading();
+const questionUnSolveCount = ref(0);
+const questionSolveCount = ref(0);
+const questionCount = ref(0);
+onMounted(async () => {
+  try {
+    //todo 修改请求接口，重新编写请求方法
+    const personalData = await QuestionControllerService.getPersonalData();
+    questionCount.value = parseInt(personalData.data.questionCount);
+    questionSolveCount.value = parseInt(personalData.data.questionSolveCount);
+    questionUnSolveCount.value = questionCount.value - questionSolveCount.value;
+  } catch (e) {
+    //
+  }
+});
 const { chartOption } = useChartOption((isDark) => {
   // echarts support https://echarts.apache.org/zh/theme-builder.html
   // It's not used here
   return {
     legend: {
       left: "center",
-      data: ["已通过题目", "提交未通过题目", "未开始题目"],
+      data: ["已通过题目", "未开始题目"],
       bottom: 0,
       icon: "circle",
       itemWidth: 8,
@@ -58,7 +74,7 @@ const { chartOption } = useChartOption((isDark) => {
           left: "center",
           top: "50%",
           style: {
-            text: "928,531",
+            text: questionCount.value,
             textAlign: "center",
             fill: isDark ? "#ffffffb3" : "#1D2129",
             fontSize: 16,
@@ -83,26 +99,26 @@ const { chartOption } = useChartOption((isDark) => {
         },
         data: [
           {
-            value: [148564],
+            value: [questionSolveCount.value],
             name: "已通过题目",
             itemStyle: {
               color: isDark ? "#3D72F6" : "#249EFF",
             },
           },
           {
-            value: [334271],
+            value: [questionUnSolveCount.value],
             name: "提交未通过题目",
             itemStyle: {
               color: isDark ? "#A079DC" : "#313CA9",
             },
           },
-          {
-            value: [445694],
-            name: "未开始题目",
-            itemStyle: {
-              color: isDark ? "#6CAAF5" : "#21CCFF",
-            },
-          },
+          // {
+          //   value: [445694],
+          //   name: "未开始题目",
+          //   itemStyle: {
+          //     color: isDark ? "#6CAAF5" : "#21CCFF",
+          //   },
+          // },
         ],
       },
     ],

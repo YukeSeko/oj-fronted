@@ -7,7 +7,9 @@
     >
       <template #title> 最近提交</template>
       <template #extra>
-        <a-link>查看更多</a-link>
+        <router-link to="/question_submit">
+          <a-link>查看更多</a-link>
+        </router-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
         <a-table
