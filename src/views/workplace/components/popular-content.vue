@@ -17,34 +17,35 @@
           :scroll="{ x: '100%', y: '264px' }"
         >
           <template #columns>
-            <a-table-column title="题目名称" data-index="key"></a-table-column>
-            <a-table-column title="标签" data-index="title">
+            <a-table-column
+              title="题目名称"
+              data-index="questionVO.title"
+            ></a-table-column>
+            <a-table-column title="标签" data-index="language">
               <template #cell="{ record }">
                 <a-typography-paragraph
                   :ellipsis="{
                     rows: 1,
                   }"
                 >
-                  {{ record.title }}
+                  <a-tag color="green" bordered>{{ record.language }}</a-tag>
                 </a-typography-paragraph>
               </template>
             </a-table-column>
-            <a-table-column title="判题结果" data-index="clickNumber">
+            <a-table-column title="判题结果" data-index="judgeInfo">
             </a-table-column>
             <a-table-column
               title="提交日期"
-              data-index="increases"
+              data-index="createTime"
               :sortable="{
                 sortDirections: ['ascend', 'descend'],
               }"
             >
               <template #cell="{ record }">
                 <div class="increases-cell">
-                  <span>{{ record.increases }}%</span>
-                  <icon-caret-up
-                    v-if="record.increases !== 0"
-                    style="color: #f53f3f; font-size: 8px"
-                  />
+                  <span>{{
+                    moment(record.createTime).format("YYYY-MM-DD")
+                  }}</span>
                 </div>
               </template>
             </a-table-column>
@@ -56,25 +57,41 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import useLoading from "@/hooks/loading";
 import type { TableData } from "@arco-design/web-vue/es/table/interface";
-import router from "@/router";
+import moment from "moment";
+import { QuestionControllerService } from "@/api/services/QuestionControllerService";
+import { QuestionSubmitQueryRequest } from "@/api/models/QuestionSubmitQueryRequest";
 
 const type = ref("text");
 const { loading, setLoading } = useLoading();
 const renderList = ref<TableData[]>();
-// const fetchData = async (contentType: string) => {
-//   try {
-//     setLoading(true);
-//     const { data } = await queryPopularList({ type: contentType });
-//     renderList.value = data;
-//   } catch (err) {
-//     // you can report use errorHandler or other
-//   } finally {
-//     setLoading(false);
-//   }
-// };
+const searchParams = ref<QuestionSubmitQueryRequest>({
+  questionId: undefined,
+  language: undefined,
+  pageSize: 6,
+  current: 1,
+});
+const fetchData = async () => {
+  try {
+    setLoading(true);
+    const res =
+      await QuestionControllerService.listQuestionSubmitByPageUsingPost({
+        ...searchParams.value,
+        sortField: "createTime",
+        sortOrder: "descend",
+      });
+    renderList.value = res.data.records;
+  } catch (err) {
+    // you can report use errorHandler or other
+  } finally {
+    setLoading(false);
+  }
+};
+onMounted(() => {
+  fetchData();
+});
 // const typeChange = (contentType: string) => {
 //   fetchData(contentType);
 // };
