@@ -34,7 +34,16 @@
                 </a-typography-paragraph>
               </template>
             </a-table-column>
-            <a-table-column title="判题结果" data-index="judgeInfo">
+            <a-table-column title="判题结果">
+              <template #cell="{ record }">
+                <a-tag
+                  :color="
+                    record.judgeInfo === '暂无判题信息' ? '#00b42a' : '#f53f3f'
+                  "
+                >
+                  {{ record.judgeInfo }}
+                </a-tag>
+              </template>
             </a-table-column>
             <a-table-column
               title="提交日期"

@@ -116,7 +116,7 @@ onMounted(async () => {
     questionSolveCount.value = parseInt(personalData.data.questionSolveCount);
   } catch (e) {
     //todo
-    message.error("系统异常");
+    message.error("个人数据请求失败");
   }
 });
 </script>
