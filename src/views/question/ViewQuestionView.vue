@@ -59,6 +59,7 @@
           :value="form.code"
           :language="form.language"
           :handle-change="changeCode"
+          code-default="aaaa"
         />
         <a-divider size="0" />
         <a-button type="primary" style="min-width: 200px" @click="doSubmit">
@@ -101,7 +102,15 @@ const loadData = async () => {
 
 const form = ref<QuestionSubmitAddRequest>({
   language: "java",
-  code: "",
+  code:
+    "public class Main{\n" +
+    "    public static void main(String[] args){\n" +
+    "        Scanner sc = new Scanner(System.in);\n" +
+    "        int a = sc.nextInt();\n" +
+    "        int b = sc.nextInt();\n" +
+    "        // 请输入你的代码 \n" +
+    "    }\n" +
+    "}",
 });
 
 /**

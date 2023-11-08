@@ -43,6 +43,14 @@
       <template #createTime="{ record }">
         {{ moment(record.createTime).format("YYYY-MM-DD") }}
       </template>
+      <template #status="{ record }">
+        <a-tag v-if="record.status === 1" loading>判题中</a-tag>
+        <a-tag
+          v-if="record.status !== 1"
+          :color="record.status === 2 ? '#00b42a' : '#f53f3f'"
+          >{{ record.status === 2 ? "判题成功" : "判题失败" }}
+        </a-tag>
+      </template>
     </a-table>
   </div>
 </template>
@@ -113,7 +121,7 @@ const columns = [
   },
   {
     title: "判题状态",
-    dataIndex: "status",
+    slotName: "status",
   },
   {
     title: "题目 id",

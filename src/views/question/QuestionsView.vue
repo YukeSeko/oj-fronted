@@ -32,11 +32,16 @@
         </a-space>
       </template>
       <template #acceptedRate="{ record }">
-        {{
-          `${
-            record.submitNum ? record.acceptedNum / record.submitNum : "0"
-          }% (${record.acceptedNum}/${record.submitNum})`
-        }}
+        <a-statistic
+          :value="
+            (record.submitNum ? record.acceptedNum / record.submitNum : 0) * 100
+          "
+          :precision="2"
+          :value-style="{ color: '#0fbf60' }"
+        >
+          <template #suffix>%</template>
+        </a-statistic>
+        {{ `(${record.acceptedNum}/${record.submitNum})` }}
       </template>
       <template #createTime="{ record }">
         {{ moment(record.createTime).format("YYYY-MM-DD") }}
