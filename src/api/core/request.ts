@@ -285,27 +285,33 @@ export const catchErrorCodes = (
   };
 
   const error = errors[result.status];
+
   if (error) {
-    throw new ApiError(options, result, error);
+    //throw new ApiError(options, result, error);
+    console.log("catchErrorCodes:"+error)
+    if (error == "Forbidden"){
+      //登录过期
+      window.location.reload()
+    }
   }
 
-  if (!result.ok) {
-    const errorStatus = result.status ?? "unknown";
-    const errorStatusText = result.statusText ?? "unknown";
-    const errorBody = (() => {
-      try {
-        return JSON.stringify(result.body, null, 2);
-      } catch (e) {
-        return undefined;
-      }
-    })();
-
-    throw new ApiError(
-      options,
-      result,
-      `Generic Error: status: ${errorStatus}; status text: ${errorStatusText}; body: ${errorBody}`
-    );
-  }
+  // if (!result.ok) {
+  //   const errorStatus = result.status ?? "unknown";
+  //   const errorStatusText = result.statusText ?? "unknown";
+  //   const errorBody = (() => {
+  //     try {
+  //       return JSON.stringify(result.body, null, 2);
+  //     } catch (e) {
+  //       return undefined;
+  //     }
+  //   })();
+  //
+  //   throw new ApiError(
+  //     options,
+  //     result,
+  //     `Generic Error: status: ${errorStatus}; status text: ${errorStatusText}; body: ${errorBody}`
+  //   );
+  // }
 };
 
 /**

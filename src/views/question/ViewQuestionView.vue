@@ -2,7 +2,7 @@
   <div id="viewQuestionView">
     <a-row :gutter="[24, 24]">
       <a-col :md="12" :xs="24">
-        <a-tabs default-active-key="question">
+        <a-tabs default-active-key="question" @change="tabChanges">
           <a-tab-pane key="question" title="题目">
             <a-card v-if="question" :title="question.title">
               <a-descriptions
@@ -34,6 +34,29 @@
           </a-tab-pane>
           <a-tab-pane key="comment" title="评论" disabled> 评论区</a-tab-pane>
           <a-tab-pane key="answer" title="答案"> 暂时无法查看答案</a-tab-pane>
+          <a-tab-pane key="record" title="提交记录">
+            <a-list>
+              <a-list-item v-for="idx in 4" :key="idx">
+                <a-list-item-meta
+                  title="Beijing Bytedance Technology Co., Ltd."
+                  description="Beijing ByteDance Technology Co., Ltd. is an enterprise located in China."
+                >
+                  <template #avatar>
+                    <a-avatar shape="square">
+                      <img
+                        alt="avatar"
+                        src="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp"
+                      />
+                    </a-avatar>
+                  </template>
+                </a-list-item-meta>
+                <template #actions>
+                  <icon-edit />
+                  <icon-delete />
+                </template>
+              </a-list-item>
+            </a-list>
+          </a-tab-pane>
         </a-tabs>
       </a-col>
       <a-col :md="12" :xs="24">
@@ -78,16 +101,39 @@ import MdViewer from "@/components/MdViewer.vue";
 import { QuestionVO } from "@/api/models/QuestionVO";
 import { QuestionControllerService } from "@/api/services/QuestionControllerService";
 import { QuestionSubmitAddRequest } from "@/api/models/QuestionSubmitAddRequest";
+import { BaseResponse_Page_QuestionSubmitVO_ } from "@/api/models/BaseResponse_Page_QuestionSubmitVO_";
+
+const question = ref<QuestionVO>();
+const record = ref<BaseResponse_Page_QuestionSubmitVO_>();
 
 interface Props {
   id: string;
 }
 
+/**
+ * 当tabs标签变化时
+ * @param key
+ */
+const tabChanges = async (key: string) => {
+  if (key === "record") {
+    const res =
+      await QuestionControllerService.listQuestionSubmitByPageUsingPost({
+        userId: question.value?.userId,
+        questionId: question.value?.id,
+        sortField: "createTime",
+        sortOrder: "descend",
+      });
+    if (res.code === 0) {
+      record.value = res.data;
+    } else {
+      message.error("加载失败，" + res.message);
+    }
+  }
+};
+
 const props = withDefaults(defineProps<Props>(), {
   id: () => "",
 });
-
-const question = ref<QuestionVO>();
 
 const loadData = async () => {
   const res = await QuestionControllerService.getQuestionVoByIdUsingGet(
