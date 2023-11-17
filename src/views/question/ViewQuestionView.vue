@@ -35,27 +35,70 @@
           <a-tab-pane key="comment" title="评论" disabled> 评论区</a-tab-pane>
           <a-tab-pane key="answer" title="答案"> 暂时无法查看答案</a-tab-pane>
           <a-tab-pane key="record" title="提交记录">
-            <a-list>
-              <a-list-item v-for="idx in 4" :key="idx">
-                <a-list-item-meta
-                  title="Beijing Bytedance Technology Co., Ltd."
-                  description="Beijing ByteDance Technology Co., Ltd. is an enterprise located in China."
-                >
-                  <template #avatar>
-                    <a-avatar shape="square">
-                      <img
-                        alt="avatar"
-                        src="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp"
-                      />
-                    </a-avatar>
+            <a-table :data="record" :pagination="false" :bordered="false">
+              <template #columns>
+                <a-table-column title="标签" data-index="language">
+                  <template #cell="{ record }">
+                    <a-typography-paragraph
+                      :ellipsis="{
+                        rows: 1,
+                      }"
+                    >
+                      <a-tag color="green" bordered
+                        >{{ record.language }}
+                      </a-tag>
+                    </a-typography-paragraph>
                   </template>
-                </a-list-item-meta>
-                <template #actions>
-                  <icon-edit />
-                  <icon-delete />
-                </template>
-              </a-list-item>
-            </a-list>
+                </a-table-column>
+                <a-table-column title="判题结果">
+                  <template #cell="{ record }">
+                    <a-tag
+                      :color="
+                        record.judgeInfo === '暂无判题信息'
+                          ? '#00b42a'
+                          : '#f53f3f'
+                      "
+                    >
+                      {{ record.judgeInfo }}
+                    </a-tag>
+                  </template>
+                </a-table-column>
+                <a-table-column
+                  title="提交日期"
+                  data-index="createTime"
+                  :sortable="{
+                    sortDirections: ['ascend', 'descend'],
+                  }"
+                >
+                  <template #cell="{ record }">
+                    <div class="increases-cell">
+                      <span>{{
+                        moment(record.createTime).format("YYYY-MM-DD")
+                      }}</span>
+                    </div>
+                  </template>
+                </a-table-column>
+                <a-table-column title="操作">
+                  <template #cell="{ record }">
+                    <a-button @click="showDetails(record)">查看详情</a-button>
+                  </template>
+                </a-table-column>
+              </template>
+            </a-table>
+            <!--            <a-list :max-height="500" :scrollbar="false">-->
+            <!--              <a-list-item v-for="idx in record" :key="idx">-->
+            <!--                <span-->
+            <!--                  >提交时间：{{-->
+            <!--                    moment(idx.updateTime).format("YYYY-MM-DD")-->
+            <!--                  }}</span-->
+            <!--                >-->
+            <!--                <a style="margin-left: 20px">判题结果：{{ idx.judgeInfo }}</a>-->
+            <!--                <template #actions>-->
+            <!--                  <icon-edit />-->
+            <!--                  <icon-delete />-->
+            <!--                </template>-->
+            <!--              </a-list-item>-->
+            <!--            </a-list>-->
           </a-tab-pane>
         </a-tabs>
       </a-col>
@@ -101,10 +144,12 @@ import MdViewer from "@/components/MdViewer.vue";
 import { QuestionVO } from "@/api/models/QuestionVO";
 import { QuestionControllerService } from "@/api/services/QuestionControllerService";
 import { QuestionSubmitAddRequest } from "@/api/models/QuestionSubmitAddRequest";
-import { BaseResponse_Page_QuestionSubmitVO_ } from "@/api/models/BaseResponse_Page_QuestionSubmitVO_";
+import moment from "moment";
+import { TableData } from "@arco-design/web-vue/es/table/interface";
+import store from "@/store";
 
 const question = ref<QuestionVO>();
-const record = ref<BaseResponse_Page_QuestionSubmitVO_>();
+const record = ref<TableData[]>();
 
 interface Props {
   id: string;
@@ -118,13 +163,13 @@ const tabChanges = async (key: string) => {
   if (key === "record") {
     const res =
       await QuestionControllerService.listQuestionSubmitByPageUsingPost({
-        userId: question.value?.userId,
+        userId: store.state.user?.loginUser?.id,
         questionId: question.value?.id,
         sortField: "createTime",
         sortOrder: "descend",
       });
     if (res.code === 0) {
-      record.value = res.data;
+      record.value = res.data.records;
     } else {
       message.error("加载失败，" + res.message);
     }
@@ -159,6 +204,11 @@ const form = ref<QuestionSubmitAddRequest>({
     "}",
 });
 
+const showDetails = (record: any) => {
+  let temp = record.code as string;
+  form.value.code = temp;
+  console.log(form.value.code);
+};
 /**
  * 提交代码
  */

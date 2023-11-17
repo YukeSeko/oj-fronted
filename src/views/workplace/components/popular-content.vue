@@ -74,6 +74,7 @@ import type { TableData } from "@arco-design/web-vue/es/table/interface";
 import moment from "moment";
 import { QuestionControllerService } from "@/api/services/QuestionControllerService";
 import { QuestionSubmitQueryRequest } from "@/api/models/QuestionSubmitQueryRequest";
+import store from "@/store";
 
 const type = ref("text");
 const { loading, setLoading } = useLoading();
@@ -90,6 +91,7 @@ const fetchData = async () => {
     const res =
       await QuestionControllerService.listQuestionSubmitByPageUsingPost({
         ...searchParams.value,
+        userId: store.state.user?.loginUser?.id,
         sortField: "createTime",
         sortOrder: "descend",
       });
@@ -102,6 +104,7 @@ const fetchData = async () => {
 };
 onMounted(() => {
   fetchData();
+  console.log(store.state.user.loginUser);
 });
 // const typeChange = (contentType: string) => {
 //   fetchData(contentType);

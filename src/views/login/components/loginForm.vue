@@ -189,7 +189,7 @@
           <a-link @click="changeLoginMethod">
             {{ isEmailLogin ? "账号密码登录 " : "邮箱登录" }}
           </a-link>
-          <a-link>忘记密码?</a-link>
+          <!--          <a-link>忘记密码?</a-link>-->
         </div>
         <a-button
           v-if="formStatus"

@@ -1,6 +1,6 @@
 <template>
   <div id="addQuestionView">
-    <h2>创建题目</h2>
+    <h2>{{ updatePage ? "修改题目" : "创建题目" }}</h2>
     <a-form :model="form" label-align="left">
       <a-form-item field="title" label="标题">
         <a-input v-model="form.title" placeholder="请输入标题" />
@@ -103,6 +103,7 @@ import MdEditor from "@/components/MdEditor.vue";
 import message from "@arco-design/web-vue/es/message";
 import { useRoute } from "vue-router";
 import { QuestionControllerService } from "@/api/services/QuestionControllerService";
+import router from "@/router";
 
 const route = useRoute();
 // 如果页面地址包含 update，视为更新页面
@@ -182,6 +183,9 @@ const doSubmit = async () => {
     );
     if (res.code === 0) {
       message.success("更新成功");
+      await router.push({
+        path: "/questions",
+      });
     } else {
       message.error("更新失败，" + res.message);
     }
@@ -190,6 +194,9 @@ const doSubmit = async () => {
       form.value
     );
     if (res.code === 0) {
+      await router.push({
+        path: "/questions",
+      });
       message.success("创建成功");
     } else {
       message.error("创建失败，" + res.message);
