@@ -9,6 +9,7 @@ import ManageQuestionView from "@/views/question/ManageQuestionView.vue";
 import QuestionsView from "@/views/question/QuestionsView.vue";
 import ViewQuestionView from "@/views/question/ViewQuestionView.vue";
 import QuestionSubmitView from "@/views/question/QuestionSubmitView.vue";
+import about from "@/views/about/index.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -26,9 +27,9 @@ export const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/workplace",
-    name: "个人数据总览",
-    component: Workplace,
+    path: "/",
+    name: "关于OJ",
+    component: about,
   },
   {
     path: "/questions",
@@ -49,6 +50,11 @@ export const routes: Array<RouteRecordRaw> = [
       access: ACCESS_ENUM.USER,
       hideInMenu: true,
     },
+  },
+  {
+    path: "/workplace",
+    name: "个人数据总览",
+    component: Workplace,
   },
   {
     path: "/add/question",
@@ -75,11 +81,6 @@ export const routes: Array<RouteRecordRaw> = [
       access: ACCESS_ENUM.ADMIN,
     },
   },
-  // {
-  //   path: "/",
-  //   name: "主页",
-  //   component: QuestionsView,
-  // },
   {
     path: "/noAuth",
     name: "无权限",

@@ -21,10 +21,10 @@ import {QuestionSubmitAddRequest} from "@/api/models/QuestionSubmitAddRequest";
 import {QuestionSubmitQueryRequest} from "@/api/models/QuestionSubmitQueryRequest";
 import {BaseResponse_Page_QuestionSubmitVO_} from "@/api/models/BaseResponse_Page_QuestionSubmitVO_";
 import {QuestionUpdateRequest} from "@/api/models/QuestionUpdateRequest";
-import {BaseResponse_LoginUserVO_} from "@/api";
+import {BaseResponse_LoginUserVO_, BaseResponse_string_} from "@/api";
+
 
 export class QuestionControllerService {
-
   /**
    * getLoginUser
    * @returns BaseResponse_LoginUserVO_ OK
@@ -42,7 +42,27 @@ export class QuestionControllerService {
     });
   }
 
-
+  /**
+   * getQuestionAnswer
+   * @returns BaseResponse_String_ OK
+   * @throws ApiError
+   */
+  public static getQuestionAnswer(questionId:number): CancelablePromise<
+    BaseResponse_string_ | any
+  > {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/api/question/getQuestionAnswer",
+      query:{
+        questionId:questionId,
+      },
+      errors: {
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        404: `Not Found`,
+      },
+    });
+  }
 
   /**
    * addQuestion

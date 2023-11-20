@@ -32,8 +32,10 @@
               </template>
             </a-card>
           </a-tab-pane>
-          <a-tab-pane key="comment" title="评论" disabled> 评论区</a-tab-pane>
-          <a-tab-pane key="answer" title="答案"> 暂时无法查看答案</a-tab-pane>
+          <!--          <a-tab-pane key="comment" title="评论" disabled> 评论区</a-tab-pane>-->
+          <a-tab-pane key="answer" title="答案">
+            <CodeViewer :value="answer" />
+          </a-tab-pane>
           <a-tab-pane key="record" title="提交记录">
             <a-table :data="record" :pagination="false" :bordered="false">
               <template #columns>
@@ -102,7 +104,7 @@
           </a-tab-pane>
         </a-tabs>
       </a-col>
-      <a-col :md="12" :xs="24">
+      <a-col :md="12" :xs="24" v-if="isShowDetails">
         <a-form :model="form" layout="inline">
           <a-form-item
             field="language"
@@ -132,6 +134,12 @@
           提交代码
         </a-button>
       </a-col>
+      <a-col :md="12" :xs="24" v-if="!isShowDetails">
+        <RecordDetail
+          :close-record="closeRecord"
+          :record-content="recordDataCode"
+        />
+      </a-col>
     </a-row>
   </div>
 </template>
@@ -147,13 +155,23 @@ import { QuestionSubmitAddRequest } from "@/api/models/QuestionSubmitAddRequest"
 import moment from "moment";
 import { TableData } from "@arco-design/web-vue/es/table/interface";
 import store from "@/store";
+import CodeViewer from "@/components/CodeViewer.vue";
+import RecordDetail from "@/components/RecordDetail.vue";
+import { QuestionSubmitVO } from "@/api/models/QuestionSubmitVO";
 
 const question = ref<QuestionVO>();
 const record = ref<TableData[]>();
+const answer = ref<string>();
+const isShowDetails = ref<boolean>(true);
+const recordDataCode = ref<QuestionSubmitVO>();
 
 interface Props {
   id: string;
 }
+
+const closeRecord = () => {
+  isShowDetails.value = !isShowDetails.value;
+};
 
 /**
  * 当tabs标签变化时
@@ -173,6 +191,12 @@ const tabChanges = async (key: string) => {
     } else {
       message.error("加载失败，" + res.message);
     }
+  } else if (key === "answer") {
+    //请求答案
+    const res = await QuestionControllerService.getQuestionAnswer(
+      question.value?.id as any
+    );
+    answer.value = res.data;
   }
 };
 
@@ -205,9 +229,8 @@ const form = ref<QuestionSubmitAddRequest>({
 });
 
 const showDetails = (record: any) => {
-  let temp = record.code as string;
-  form.value.code = temp;
-  console.log(form.value.code);
+  recordDataCode.value = record;
+  isShowDetails.value = !isShowDetails.value;
 };
 /**
  * 提交代码
