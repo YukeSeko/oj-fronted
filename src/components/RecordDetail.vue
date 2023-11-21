@@ -27,19 +27,36 @@
           <!--              </a-col>-->
           <!--            </a-row>-->
           <!--          </div>-->
-          <div class="tag">
-            <a-tag color="arcoblue" bordered size="small">
-              {{ props.recordContent.language }}
-            </a-tag>
-          </div>
           <div class="message">
-            <p class="label">判题信息</p>
-            <div class="messageBox">
-              {{ props.recordContent.judgeInfo }}
-            </div>
+            <p class="label" style="font-size: 20px">判题信息</p>
+            <a-alert
+              style="margin-top: 20px"
+              :type="props.recordContent.status === 2 ? 'success' : 'error'"
+              >{{ props.recordContent.judgeInfo }}
+            </a-alert>
+          </div>
+          <div class="tag">
+            <p class="label">
+              语言：
+              <a-tag color="arcoblue" bordered size="small">
+                {{ props.recordContent.language }}
+              </a-tag>
+            </p>
+            <p class="label" v-if="props.recordContent.status === 2">
+              运行内存：
+              <a-tag color="arcoblue" bordered size="small">
+                {{ props.recordContent.detailsInfo.memory }}MB
+              </a-tag>
+            </p>
+            <p class="label" v-if="props.recordContent.status === 2">
+              执行时间：
+              <a-tag color="arcoblue" bordered size="small">
+                {{ props.recordContent.detailsInfo.time }}ms
+              </a-tag>
+            </p>
           </div>
           <div class="code">
-            <p class="label">输入代码</p>
+            <p class="label">输入代码：</p>
             <MdViewer :value="codeContent" />
           </div>
         </a-scrollbar>

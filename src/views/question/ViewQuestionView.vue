@@ -46,7 +46,7 @@
                         rows: 1,
                       }"
                     >
-                      <a-tag color="green" bordered
+                      <a-tag style="margin-top: 10px" color="green" bordered
                         >{{ record.language }}
                       </a-tag>
                     </a-typography-paragraph>
@@ -54,13 +54,7 @@
                 </a-table-column>
                 <a-table-column title="判题结果">
                   <template #cell="{ record }">
-                    <a-tag
-                      :color="
-                        record.judgeInfo === '暂无判题信息'
-                          ? '#00b42a'
-                          : '#f53f3f'
-                      "
-                    >
+                    <a-tag :color="record.status === 2 ? '#00b42a' : '#f53f3f'">
                       {{ record.judgeInfo }}
                     </a-tag>
                   </template>
@@ -117,9 +111,9 @@
               placeholder="选择编程语言"
             >
               <a-option>java</a-option>
-              <a-option>cpp</a-option>
-              <a-option>go</a-option>
-              <a-option>html</a-option>
+              <!--              <a-option>cpp</a-option>-->
+              <!--              <a-option>go</a-option>-->
+              <!--              <a-option>html</a-option>-->
             </a-select>
           </a-form-item>
         </a-form>
@@ -218,6 +212,8 @@ const loadData = async () => {
 const form = ref<QuestionSubmitAddRequest>({
   language: "java",
   code:
+    "import java.io.*;\n" +
+    "import java.util.*;\n" +
     "public class Main{\n" +
     "    public static void main(String[] args){\n" +
     "        Scanner sc = new Scanner(System.in);\n" +
@@ -230,7 +226,7 @@ const form = ref<QuestionSubmitAddRequest>({
 
 const showDetails = (record: any) => {
   recordDataCode.value = record;
-  isShowDetails.value = !isShowDetails.value;
+  isShowDetails.value = false;
 };
 /**
  * 提交代码
