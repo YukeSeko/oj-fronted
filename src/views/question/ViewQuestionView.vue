@@ -217,8 +217,6 @@ const form = ref<QuestionSubmitAddRequest>({
     "public class Main{\n" +
     "    public static void main(String[] args){\n" +
     "        Scanner sc = new Scanner(System.in);\n" +
-    "        int a = sc.nextInt();\n" +
-    "        int b = sc.nextInt();\n" +
     "        // 请输入你的代码 \n" +
     "    }\n" +
     "}",

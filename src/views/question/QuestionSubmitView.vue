@@ -34,9 +34,7 @@
       @page-change="onPageChange"
     >
       <template #judgeInfo="{ record }">
-        <a-tag
-          :color="record.judgeInfo === '暂无判题信息' ? '#00b42a' : '#f53f3f'"
-        >
+        <a-tag :color="record.status === 2 ? '#00b42a' : '#f53f3f'">
           {{ record.judgeInfo }}
         </a-tag>
       </template>
@@ -51,6 +49,9 @@
           >{{ record.status === 2 ? "判题成功" : "判题失败" }}
         </a-tag>
       </template>
+      <template #user="{ record }">
+        {{ record.userId }}
+      </template>
     </a-table>
   </div>
 </template>
@@ -64,6 +65,7 @@ import moment from "moment";
 import { QuestionSubmitQueryRequest } from "@/api/models/QuestionSubmitQueryRequest";
 import { QuestionControllerService } from "@/api/services/QuestionControllerService";
 import { Question } from "@/api/models/Question";
+import store from "../../store";
 
 const tableRef = ref();
 
@@ -102,9 +104,9 @@ watchEffect(() => {
 /**
  * 页面加载时，请求数据
  */
-// onMounted(() => {
-//   loadData();
-// });
+onMounted(() => {
+  console.log(store.state.user.loginUser.userId);
+});
 
 const columns = [
   {
@@ -124,12 +126,12 @@ const columns = [
     slotName: "status",
   },
   {
-    title: "题目 id",
-    dataIndex: "questionId",
+    title: "题目名称",
+    dataIndex: "questionVO.title",
   },
   {
-    title: "提交者 id",
-    dataIndex: "userId",
+    title: "提交者",
+    slotName: "user",
   },
   {
     title: "创建时间",
